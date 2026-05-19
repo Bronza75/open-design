@@ -79,9 +79,9 @@ This file is the single source of truth for agents entering this repository. Rea
 ## Git commit policy
 
 - Git commits must not include `Co-authored-by` trailers or any other co-author metadata.
-- In this local checkout, `origin` points to the upstream repository (`https://github.com/nexu-io/open-design.git`) and is not the user's writable remote. Do not push to `origin` unless the user explicitly asks for an upstream push or PR workflow.
-- The user's fork remote is `bronza` (`https://github.com/Bronza75/open-design.git`). For ordinary "commit e push" requests in this repo, push to `bronza/main`.
-- After pushing to `bronza`, `git status` may still report `main...origin/main [ahead N]`; that only means local `main` is ahead of upstream `origin/main`, not that the user-fork push failed.
+- In this local checkout, `bronza` is the user's writable fork remote (`https://github.com/Bronza75/open-design.git`) and `main` tracks `bronza/main`. For ordinary "commit e push" requests in this repo, push to `bronza/main`.
+- `upstream` points to the original project repository (`https://github.com/nexu-io/open-design.git`) and is only for fetching/comparing or explicit upstream/PR workflows. Do not push to `upstream` unless the user explicitly asks for it.
+- Prefer this remote layout for future clones too: user fork as the branch upstream, original project as `upstream`, and no writable workflow that targets the original project by accident.
 
 ## Pull request expectations
 

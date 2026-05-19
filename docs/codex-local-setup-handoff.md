@@ -268,6 +268,41 @@ Before committing or syncing:
 git status --short --branch
 ```
 
+Use this remote layout on this machine:
+
+```text
+bronza   -> https://github.com/Bronza75/open-design.git
+upstream -> https://github.com/nexu-io/open-design.git
+```
+
+`bronza` is the writable fork. `upstream` is the original project and should only be used for fetching/comparing or explicit upstream/PR workflows.
+
+For a fresh clone from the user's fork:
+
+```powershell
+cd C:\Users\Alexandre\Developer
+git clone -o bronza https://github.com/Bronza75/open-design.git open-design
+cd C:\Users\Alexandre\Developer\open-design
+git remote add upstream https://github.com/nexu-io/open-design.git
+git branch --set-upstream-to=bronza/main main
+```
+
+If the clone was made from `nexu-io/open-design` and has `origin` pointing to the original project, rename it and make `main` track the fork:
+
+```powershell
+git remote rename origin upstream
+git remote add bronza https://github.com/Bronza75/open-design.git
+git fetch bronza
+git branch --unset-upstream
+git branch --set-upstream-to=bronza/main main
+```
+
+After setup, expected status should compare against `bronza/main`:
+
+```text
+## main...bronza/main
+```
+
 Expected local runtime directories that should not be committed include:
 
 ```text
