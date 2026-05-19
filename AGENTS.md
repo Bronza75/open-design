@@ -5,6 +5,7 @@ This file is the single source of truth for agents entering this repository. Rea
 ## Core documentation index
 
 - Product and onboarding: `README.md`, `README.zh-CN.md`, `QUICKSTART.md`.
+- Local Codex handoff on this Windows machine: `docs/codex-local-setup-handoff.md`.
 - Contribution and environment: `CONTRIBUTING.md`, `CONTRIBUTING.zh-CN.md`.
 - Architecture and protocols: `docs/spec.md`, `docs/architecture.md`, `docs/skills-protocol.md`, `docs/agent-adapters.md`, `docs/modes.md`.
 - Roadmap and references: `docs/roadmap.md`, `docs/references.md`, `docs/code-review-guidelines.md`, `specs/current/maintainability-roadmap.md`.
@@ -78,6 +79,9 @@ This file is the single source of truth for agents entering this repository. Rea
 ## Git commit policy
 
 - Git commits must not include `Co-authored-by` trailers or any other co-author metadata.
+- In this local checkout, `origin` points to the upstream repository (`https://github.com/nexu-io/open-design.git`) and is not the user's writable remote. Do not push to `origin` unless the user explicitly asks for an upstream push or PR workflow.
+- The user's fork remote is `bronza` (`https://github.com/Bronza75/open-design.git`). For ordinary "commit e push" requests in this repo, push to `bronza/main`.
+- After pushing to `bronza`, `git status` may still report `main...origin/main [ahead N]`; that only means local `main` is ahead of upstream `origin/main`, not that the user-fork push failed.
 
 ## Pull request expectations
 

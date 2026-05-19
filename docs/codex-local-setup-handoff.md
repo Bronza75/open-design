@@ -135,6 +135,75 @@ pnpm tools-dev stop
 
 ## Problems Encountered Here
 
+### Codex CLI detected, but runs fail with `"node" nao e reconhecido`
+
+Open Design first detected Codex through the npm global shim:
+
+```text
+C:\Users\Alexandre\AppData\Roaming\npm\codex.cmd
+```
+
+That made `GET /api/agents` report Codex as installed, but actual design runs failed with:
+
+```text
+agent exited with code 1
+"node" nao e reconhecido como um comando interno ou externo, um programa operavel ou um arquivo em lotes.
+```
+
+Cause: `codex.cmd` calls `node` by name. The Open Design-spawned agent process can have a narrower `PATH` than the interactive PowerShell session, so it may not find `node.exe` even when `node --version` works in the terminal.
+
+Fix used: create a wrapper that calls Node by absolute path:
+
+```powershell
+New-Item -ItemType Directory -Force -Path 'C:\Users\Alexandre\bin' | Out-Null
+```
+
+Create `C:\Users\Alexandre\bin\codex-open-design.cmd` with:
+
+```bat
+@echo off
+"C:\nvm4w\nodejs\node.exe" "C:\Users\Alexandre\AppData\Roaming\npm\node_modules\@openai\codex\bin\codex.js" %*
+```
+
+Test it:
+
+```powershell
+& 'C:\Users\Alexandre\bin\codex-open-design.cmd' --version
+```
+
+Expected:
+
+```text
+codex-cli 0.131.0
+```
+
+Then configure Open Design to use the wrapper as `CODEX_BIN`:
+
+```powershell
+$current = (Invoke-RestMethod -Uri 'http://127.0.0.1:17456/api/app-config').config
+if ($null -eq $current.agentCliEnv) { $current | Add-Member -NotePropertyName agentCliEnv -NotePropertyValue ([pscustomobject]@{}) }
+$current.agentCliEnv | Add-Member -Force -NotePropertyName codex -NotePropertyValue ([pscustomobject]@{ CODEX_BIN = 'C:\Users\Alexandre\bin\codex-open-design.cmd' })
+$body = $current | ConvertTo-Json -Depth 12
+Invoke-RestMethod -Method Put -Uri 'http://127.0.0.1:17456/api/app-config' -ContentType 'application/json' -Body $body
+```
+
+Verify:
+
+```powershell
+Invoke-RestMethod -Uri 'http://127.0.0.1:17456/api/agents' | ConvertTo-Json -Depth 8
+```
+
+Codex should show:
+
+```text
+available: true
+path: C:\Users\Alexandre\bin\codex-open-design.cmd
+version: codex-cli 0.131.0
+modelsSource: live
+```
+
+Reload the Open Design page if the UI still shows the previous agent state.
+
 ### `pnpm` not recognized after `nvm use`
 
 After switching from Node 22 to Node 24, `corepack pnpm` worked but plain `pnpm` was not available. That broke `pnpm tools-dev`, because the repo scripts call `pnpm` directly.

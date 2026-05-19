@@ -228,3 +228,45 @@ opencode --version
 ```
 
 If Open Design still shows OpenCode as *not installed* in **Settings → Execution mode**, click **Rescan** after confirming the `opencode.cmd` directory is on your user `PATH`.
+
+---
+
+## Optional: Codex CLI on Windows
+
+### Symptom
+
+Open Design detects Codex CLI, but a run exits immediately with:
+
+```text
+"node" is not recognized as an internal or external command
+```
+
+or, on Portuguese Windows:
+
+```text
+"node" nao e reconhecido como um comando interno ou externo, um programa operavel ou um arquivo em lotes.
+```
+
+### Fix
+
+Install Codex CLI globally:
+
+```powershell
+npm install -g @openai/codex
+codex --version
+```
+
+If Open Design can detect Codex but runs still fail because `node` is missing, create a wrapper that calls Node by absolute path:
+
+```bat
+@echo off
+"C:\nvm4w\nodejs\node.exe" "C:\Users\YOUR_USERNAME\AppData\Roaming\npm\node_modules\@openai\codex\bin\codex.js" %*
+```
+
+Save it somewhere stable, for example:
+
+```text
+C:\Users\YOUR_USERNAME\bin\codex-open-design.cmd
+```
+
+Then set Codex's `CODEX_BIN` in Open Design settings, or through `/api/app-config`, to that wrapper path and rescan agents. This avoids depending on the daemon's inherited `PATH`.
